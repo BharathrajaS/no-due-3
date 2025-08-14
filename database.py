@@ -1,22 +1,27 @@
 from pymongo import MongoClient
-from flask import g
+from flask import g, current_app
 import certifi
 
 def init_db(app):
-    app.config['MONGO_CLIENT'] = MongoClient(
-        app.config['MONGODB_URI'],
-        tls=True,  # ✅ enable TLS explicitly
-        tlsCAFile=certifi.where()  # ✅ tell it to use the CA bundle
+    uri = app.config.get("MONGODB_URI")
+    if not uri:
+        raise ValueError("MONGODB_URI is not set in app config")
+
+    client = MongoClient(
+        uri,
+        tls=True,
+        tlsCAFile=certifi.where()
     )
-    app.config['MONGO_DB'] = app.config['MONGO_CLIENT'].get_database()
+
+    # If DB name not in URI, specify here
+    app.config['MONGO_CLIENT'] = client
+    app.config['MONGO_DB'] = client.get_database()
 
 def get_db():
     if 'db' not in g:
-        from flask import current_app
         g.db = current_app.config['MONGO_DB']
     return g.db
 
 def close_db(e=None):
     db = g.pop('db', None)
-    if db is not None:
-        pass
+    # Mongo closes automatically; nothing to do
