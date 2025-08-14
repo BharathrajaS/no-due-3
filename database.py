@@ -1,9 +1,13 @@
 from pymongo import MongoClient
 from flask import g
-import certifi 
+import certifi
 
 def init_db(app):
-    app.config['MONGO_CLIENT'] = MongoClient(app.config['MONGODB_URI'])
+    app.config['MONGO_CLIENT'] = MongoClient(
+        app.config['MONGODB_URI'],
+        tls=True,  # ✅ enable TLS explicitly
+        tlsCAFile=certifi.where()  # ✅ tell it to use the CA bundle
+    )
     app.config['MONGO_DB'] = app.config['MONGO_CLIENT'].get_database()
 
 def get_db():
@@ -15,5 +19,4 @@ def get_db():
 def close_db(e=None):
     db = g.pop('db', None)
     if db is not None:
-        # MongoDB connections are handled automatically
         pass
