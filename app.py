@@ -7,8 +7,7 @@ from bson import ObjectId
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 's8d7f6s8d7f6s8d7f6s8d7f6!@#%GHSDFhwefhwe'
-app.config['MONGODB_URI'] = "mongodb+srv://sbharathraja2003:admin123@nodue.sjidqdr.mongodb.net/no_due?retryWrites=true&w=majority&tls=true"
-
+app.config['MONGODB_URI'] = os.environ.get("MONGODB_URI")
 # Initialize MongoDB
 init_db(app)
 
