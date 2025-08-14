@@ -1,5 +1,6 @@
 from pymongo import MongoClient
 from flask import g
+import certifi 
 
 def init_db(app):
     app.config['MONGO_CLIENT'] = MongoClient(app.config['MONGODB_URI'])
